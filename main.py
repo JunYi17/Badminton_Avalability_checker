@@ -102,6 +102,14 @@ def get_user_info():
 
 
 def first_time_setup():
+    try:
+        with open("top_secret.txt","x") as initfile:
+            print("user info file does not exist, create a new file with initialzed dummy data")
+            initfile.write("NO")
+            print("setting up.........")
+    except FileExistsError:
+        print("user info file existed, remain as it is.")
+
     with open("top_secret.txt", "r+") as f:
         line = f.readline()
         if line == "NO":
