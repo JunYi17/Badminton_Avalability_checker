@@ -1,5 +1,6 @@
 import datetime
 import time
+import os
 import pandas as pd
 from one_pa import OnePa
 from active_sg import ActiveSG
@@ -55,16 +56,6 @@ def get_num_in_range(min_num, max_num, to_ask, error_msg):
         num = int(input(error_msg))
     return num
 
-
-def get_confirmed_response(to_ask):
-    while True:
-        words = input(to_ask)
-        confirmed = input("Are you sure? y/n ")
-        if confirmed == "y" or confirmed == "Y" or confirmed == "yes" or confirmed == "Yes":
-            break
-    return words
-
-
 def get_yes_no_response(to_ask, default):
     confirmed = input(to_ask + " y/n ")
     if not confirmed:
@@ -86,43 +77,46 @@ def get_activity_response(to_ask):
             li_idx = 21
     return li_idx
 
+def get_confirmed_response(to_ask):
+    while True:
+        words = input(to_ask)
+        confirmed = input("Are you sure? y/n ")
+        if confirmed == "y" or confirmed == "Y" or confirmed == "yes" or confirmed == "Yes":
+            break
+    return words
 
 def get_user_info():
-    print("Hello and welcome to Badminton Availability Check (BAC) Alpha release")
-    user = get_confirmed_response(
-        "what is your active sg username? (Relax, only you can see this) "
-    )
-    pass_ = get_confirmed_response(
-        "What is your active sg password? (Relax, only you can see this) "
-    )
-    chrome_driver = get_confirmed_response(
-        "Where did you download chromedriver too? (e.g. C:/downloads/chromedriver.exe) It should start with 'C:' and end with 'chromedriver.exe' "
-    )
-    return user, pass_, chrome_driver
-
+    while True:
+        print("Please key in your username and password")
+        __user = input(" Username : \n")
+        __pass = input(" Password : \n")
+        a = input(" Confirmed on username *{}* and password *{}* ? y/n \n".format(__user,__pass))
+        if a == "y" or a == "Y" or a == "yes" or a == "Yes" or a == "YES":
+            break
+    #chrome_driver = get_confirmed_response("Where did you download chromedriver too? (e.g. C:/downloads/chromedriver.exe) It should start with 'C:' and end with 'chromedriver.exe' ")
+    return __user, __pass#, chrome_driver
 
 def first_time_setup():
-    try:
-        with open("top_secret.txt","x") as initfile:
-            print("user info file does not exist, create a new file with initialzed dummy data")
+    # File Directories
+    path = os.getcwd()
+    if os.path.exists(os.path.join(path,"top_secret.txt")):
+        print("Program starting...")
+    else:
+        print("Setting up program...")
+        with open("top_secret.txt","w") as initfile:   
             initfile.write("NO")
-            print("setting up.........")
-    except FileExistsError:
-        print("user info file existed, remain as it is.")
 
     with open("top_secret.txt", "r+") as f:
         line = f.readline()
         if line == "NO":
-            user, password, chrome_driver = get_user_info()
-            print(
-                "Writing user details to top_secret.txt. \nIf you made a mistake, just go into the file and replace all the content with 'NO'\n"
-            )
+            user, password = get_user_info()
+            print("Writing user details to top_secret.txt. \nIf you made a mistake, just go into the file and replace all the content with 'NO'\n")
             f.seek(0)
             f.write("YES\n" + user + "\n" + password + "\n" + chrome_driver)
 
-
 def main():
     # date = datetime.datetime(2020, 2, 14)
+    print("Hello and welcome to Badminton Availability Checker")
     first_time_setup()
     start = time.time()
     month = get_num_in_range(
