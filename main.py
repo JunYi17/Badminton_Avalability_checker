@@ -1,6 +1,7 @@
 import datetime
 import time
 import os
+import regex
 import pandas as pd
 from one_pa import OnePa
 from active_sg import ActiveSG
@@ -50,30 +51,28 @@ def save_to_csv(df_to_save, filename):
     df_to_save.to_csv(filename, header=False)
 
 
-def get_num_in_range(min_num, max_num, to_ask, error_msg):
-    num = int(input(to_ask))
+def get_num_in_range(min_num, max_num, ques, error_msg):
+    num = int(input(ques+"\n"))
     while num < min_num or num > max_num:
         num = int(input(error_msg))
     return num
 
-def get_yes_no_response(to_ask, default):
-    confirmed = input(to_ask + " y/n ")
+def get_yes_no_response(ques, default):
+    confirmed = input(ques + "\ty/n \n")
     if not confirmed:
         return default
     return confirmed.lower() in ["y", "yes"]
 
-
-
 def get_activity_response(to_ask):
     num = int(input(to_ask))
     if num < 1 or num > 3:
-        return int(input(f"Invalid input \n\n{to_ask}"))
+        return int(input("Invalid input \n\n{}.format{to_ask}"))
     else:
         if num == 1:
             li_idx = 2
-        if num == 2:
+        elif num == 2:
             li_idx = 25
-        if num == 3:
+        elif num == 3:
             li_idx = 21
     return li_idx
 
@@ -106,13 +105,17 @@ def first_time_setup():
         with open("top_secret.txt","w") as initfile:   
             initfile.write("NO")
 
+    string ="NO"
+
     with open("top_secret.txt", "r+") as f:
         line = f.readline()
-        if line == "NO":
+        pattern = regex.compile('NO')
+        data = pattern.match(line)
+        if data != None:
             user, password = get_user_info()
             print("Writing user details to top_secret.txt. \nIf you made a mistake, just go into the file and replace all the content with 'NO'\n")
             f.seek(0)
-            f.write("YES\n" + user + "\n" + password + "\n" + chrome_driver)
+            f.write("YES\n" + user + "\n" + password) #+ "\n" + chrome_driver)
 
 def main():
     # date = datetime.datetime(2020, 2, 14)
@@ -120,17 +123,17 @@ def main():
     first_time_setup()
     start = time.time()
     month = get_num_in_range(
-        1,
-        12,
-        "What month do you want to search in? (should be a number) ",
-        "Invalid input \n\nWhat month do you want to search in? (should be a number) ",
-    )
+                                1,
+                                12,
+                                "What month do you want to search in? (should be a number) ",
+                                "Invalid input\nWhat month do you want to search in? (should be a number) ",
+                            )
     day = get_num_in_range(
-        1,
-        31,
-        "What day of the month? (should be a number) ",
-        "Invalid input \n\nWhat day of the month? (should be a number) ",
-    )
+                            1,
+                            31,
+                            "What day of the month? (should be a number) ",
+                            "Invalid input\nWhat day of the month? (should be a number) ",
+                            )
     search_active_sg = get_yes_no_response("Do you want to search active SG badminton courts?", True)
     search_pa = get_yes_no_response("Do you want to search one PA badminton courts?", False)
     search_activity = get_activity_response("Which activity do you want to search for (1.Badminton 2.Tennis 3.Squesh)? ")
