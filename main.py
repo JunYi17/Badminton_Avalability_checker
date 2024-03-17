@@ -80,7 +80,8 @@ def get_confirmed_response(to_ask):
     while True:
         words = input(to_ask)
         confirmed = input("Are you sure? y/n ")
-        if confirmed == "y" or confirmed == "Y" or confirmed == "yes" or confirmed == "Yes":
+        resp = regex.compile(r"[y|Y|yes|yEs|yeS|yES|Yes|YEs|YES|YeS]")
+        if None != resp.match(confirmed):
             break
     return words
 
@@ -90,22 +91,24 @@ def get_user_info():
         __user = input(" Username : \n")
         __pass = input(" Password : \n")
         a = input(" Confirmed on username *{}* and password *{}* ? y/n \n".format(__user,__pass))
-        if a == "y" or a == "Y" or a == "yes" or a == "Yes" or a == "YES":
+        resp = regex.compile(r"[y|Y|yes|yEs|yeS|yES|Yes|YEs|YES|YeS]")
+        if None != resp.match(a):
             break
     #chrome_driver = get_confirmed_response("Where did you download chromedriver too? (e.g. C:/downloads/chromedriver.exe) It should start with 'C:' and end with 'chromedriver.exe' ")
     return __user, __pass#, chrome_driver
 
+
 def first_time_setup():
     # File Directories
     path = os.getcwd()
+    ''' temporary remove during debug phase
     if os.path.exists(os.path.join(path,"top_secret.txt")):
         print("Program starting...")
     else:
-        print("Setting up program...")
-        with open("top_secret.txt","w") as initfile:   
-            initfile.write("NO")
-
-    string ="NO"
+    '''
+    print("Setting up program...")
+    with open("top_secret.txt","w") as initfile:   
+        initfile.write("NO")
 
     with open("top_secret.txt", "r+") as f:
         line = f.readline()
