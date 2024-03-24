@@ -86,27 +86,30 @@ def get_confirmed_response(to_ask):
     return words
 
 def get_user_info():
+    resp = regex.compile(r"[y|Y|yes|yEs|yeS|yES|Yes|YEs|YES|YeS]")
     while True:
         print("Please key in your username and password")
         __user = input(" Username : \n")
         __pass = input(" Password : \n")
-        a = input(" Confirmed on username *{}* and password *{}* ? y/n \n".format(__user,__pass))
-        resp = regex.compile(r"[y|Y|yes|yEs|yeS|yES|Yes|YEs|YES|YeS]")
+        a = input(" Confirmed on username {} and password {} ? y/n \n".format(__user,__pass))
         if None != resp.match(a):
             break
-    #chrome_driver = get_confirmed_response("Where did you download chromedriver too? (e.g. C:/downloads/chromedriver.exe) It should start with 'C:' and end with 'chromedriver.exe' ")
-    return __user, __pass#, chrome_driver
-
+    while True:
+        print("Where did you download chromedriver? It's location should start with 'C:' and end with 'chromedriver.exe'")
+        __chrome = input("Please enter the full path to chromedriver: \n")
+        b = input("Confirmd on the chromedriver location \n{} y/n?".format(__chrome))
+        if None != resp.match(b):
+            break
+    return __user, __pass, __chrome
 
 def first_time_setup():
     # File Directories
     path = os.getcwd()
-    ''' temporary remove during debug phase
     if os.path.exists(os.path.join(path,"top_secret.txt")):
         print("Program starting...")
     else:
-    '''
-    print("Setting up program...")
+        print("Setting up program...")
+
     with open("top_secret.txt","w") as initfile:   
         initfile.write("NO")
 
@@ -115,10 +118,10 @@ def first_time_setup():
         pattern = regex.compile('NO')
         data = pattern.match(line)
         if data != None:
-            user, password = get_user_info()
+            user, password, chrome_driver = get_user_info()
             print("Writing user details to top_secret.txt. \nIf you made a mistake, just go into the file and replace all the content with 'NO'\n")
             f.seek(0)
-            f.write("YES\n" + user + "\n" + password) #+ "\n" + chrome_driver)
+            f.write("YES\n" + user + "\n" + password + "\n" + chrome_driver)
 
 def main():
     # date = datetime.datetime(2020, 2, 14)
